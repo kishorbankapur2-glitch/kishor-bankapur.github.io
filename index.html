@@ -35,15 +35,44 @@ h1{ text-align:center; margin-bottom:18px; font-size: 22px; }
     margin-bottom:14px;
 }
 
+.input-box{
+    position:relative;
+    width:100%;
+}
+
 input{
     width: 100%;
     box-sizing: border-box;
     padding:14px;
+    padding-right:90px;
     border-radius:14px;
     border:none;
     background:rgba(255,255,255,0.1);
     color:white;
     outline:none;
+}
+
+#pasteBtn, #clearBtn{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    right:10px;
+    padding:6px 12px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    font-size:12px;
+}
+
+#pasteBtn{
+    background:#0A84FF;
+    color:white;
+}
+
+#clearBtn{
+    background:#ff3b30;
+    color:white;
+    display:none;
 }
 
 .btn-row { display: flex; gap: 10px; }
@@ -81,7 +110,13 @@ iframe{ width:100%; height:100%; border:none; }
     <h1>YouTube No Ads</h1>
 
     <div class="input-wrapper">
-        <input type="text" id="videoUrl" placeholder="Paste link (youtu.be or youtube.com)">
+
+        <div class="input-box">
+            <input type="text" id="videoUrl" placeholder="Paste link (youtu.be or youtube.com)" oninput="toggleClear()">
+            <button id="pasteBtn" onclick="pasteText()">Paste</button>
+            <button id="clearBtn" onclick="clearInput()">✕</button>
+        </div>
+
         <div class="btn-row">
             <button class="play-btn" onclick="loadVideo()">Play</button>
             <button class="down-btn" onclick="downloadVideo()">Download</button>
@@ -94,13 +129,15 @@ iframe{ width:100%; height:100%; border:none; }
 </div>
 
 <script>
-// Is function se hum kisi bhi type ke link se Video ID nikaal sakte hain
+
+// Extract YouTube ID
 function getYouTubeID(url) {
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const match = url.match(regex);
     return (match && match[1]) ? match[1] : null;
 }
 
+// Load video
 function loadVideo(){
     const url = document.getElementById('videoUrl').value.trim();
     const vId = getYouTubeID(url);
@@ -113,19 +150,51 @@ function loadVideo(){
     }
 }
 
+// Download video
 function downloadVideo(){
     const url = document.getElementById('videoUrl').value.trim();
     const vId = getYouTubeID(url);
 
     if(vId){
-        // Yahan link ko convert kiya ja raha hai
-        // Example: https://ssyoutube.com/watch?v=cA2jfLr-IhE
         const finalDownloadLink = `https://ssyoutube.com/watch?v=${vId}`;
         window.open(finalDownloadLink, '_blank');
     } else {
-        alert("Pehle link toh copy-paste karo!");
+        alert("Pehle link toh paste karo!");
     }
 }
+
+// Paste from clipboard
+async function pasteText(){
+    try{
+        const text = await navigator.clipboard.readText();
+        document.getElementById("videoUrl").value = text;
+        toggleClear();
+    }catch(err){
+        alert("Clipboard access allow karo.");
+    }
+}
+
+// Clear input
+function clearInput(){
+    document.getElementById("videoUrl").value = "";
+    toggleClear();
+}
+
+// Toggle buttons
+function toggleClear(){
+    const input = document.getElementById("videoUrl").value;
+    const clearBtn = document.getElementById("clearBtn");
+    const pasteBtn = document.getElementById("pasteBtn");
+
+    if(input.length > 0){
+        clearBtn.style.display = "block";
+        pasteBtn.style.display = "none";
+    }else{
+        clearBtn.style.display = "none";
+        pasteBtn.style.display = "block";
+    }
+}
+
 </script>
 
 </body>
