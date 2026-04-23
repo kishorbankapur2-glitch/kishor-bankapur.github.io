@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Careless Timetable · Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Careless Timetable · Swipe to Delete</title>
     <style>
         * {
             margin: 0;
@@ -30,13 +30,12 @@
             backdrop-filter: blur(2px);
             border-radius: 2.5rem;
             box-shadow: 0 25px 45px -15px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255,255,255,0.6);
-            padding: 2rem 2rem 2rem 2rem;
+            padding: 2rem;
             transition: all 0.2s;
         }
 
-        /* CARELESS TITLE - Capital C, premium fonts */
         .careless-title {
-            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            font-family: 'Playfair Display', 'Georgia', serif;
             font-size: 3.2rem;
             font-weight: 800;
             letter-spacing: -0.3px;
@@ -47,15 +46,8 @@
             border-left: 7px solid #e67e22;
             padding-left: 1.2rem;
             margin-bottom: 0.1rem;
-            text-shadow: 2px 4px 12px rgba(0,0,0,0.04);
         }
 
-        /* premium typography */
-        .premium-text {
-            font-family: 'Inter', 'SF Pro Text', system-ui;
-        }
-
-        /* info strip */
         .info-strip {
             display: flex;
             flex-wrap: wrap;
@@ -75,13 +67,6 @@
             background: white;
             padding: 0.3rem 1.2rem;
             border-radius: 60px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .calendar-box label {
-            font-weight: 600;
-            color: #2c5a74;
-            font-size: 0.85rem;
         }
 
         input[type="date"] {
@@ -89,10 +74,8 @@
             background: #f0f4fa;
             padding: 0.5rem 1rem;
             border-radius: 40px;
-            font-weight: 500;
             font-family: 'SF Mono', monospace;
             font-size: 0.9rem;
-            cursor: pointer;
         }
 
         .day-pill {
@@ -101,12 +84,7 @@
             padding: 0.55rem 1.5rem;
             border-radius: 100px;
             font-weight: 700;
-            font-size: 1rem;
-            letter-spacing: 0.3px;
             box-shadow: 0 3px 0 #141f2a;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .live-time {
@@ -114,214 +92,91 @@
             color: #eef5ff;
             padding: 0.5rem 1.3rem;
             border-radius: 60px;
-            font-family: 'SF Mono', 'JetBrains Mono', monospace;
+            font-family: 'SF Mono', monospace;
             font-weight: 600;
-            font-size: 1rem;
-            letter-spacing: 1px;
-            box-shadow: inset 0 1px 3px #4a627a, 0 2px 6px rgba(0,0,0,0.1);
             margin-left: auto;
         }
 
-        /* TABLE premium style */
-        .timetable-wrapper {
-            overflow-x: auto;
+        .timetable-swipe-container {
+            overflow: hidden;
             border-radius: 1.5rem;
             background: #ffffff;
-            margin: 0.8rem 0 1rem;
             border: 1px solid #eef2f8;
         }
 
-        .timetable {
+        .swipe-item {
+            position: relative;
             width: 100%;
-            border-collapse: collapse;
-        }
-
-        .timetable th, .timetable td {
-            padding: 1.1rem 1rem;
-            text-align: left;
             border-bottom: 1px solid #ecf3f9;
+            background: #e74c3c; /* Background color revealed on swipe */
         }
 
-        .timetable th {
-            background: #f8fbfe;
-            font-weight: 700;
-            color: #1f5370;
-            font-size: 0.85rem;
-            letter-spacing: 0.3px;
+        .swipe-row-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 1rem;
+            background: white;
+            position: relative;
+            z-index: 2;
+            touch-action: pan-y;
+            user-select: none;
         }
 
-        .subject-cell {
-            font-weight: 600;
-            color: #1a3f55;
-        }
-
-        .time-cell {
-            font-family: 'SF Mono', monospace;
-            font-weight: 500;
-            background: #f5faff;
-            display: inline-block;
-            padding: 0.25rem 1rem;
-            border-radius: 40px;
-            font-size: 0.85rem;
-        }
-
-        /* 3D PILL with horizontal tap effect */
-        .status-pill {
-            display: inline-flex;
+        .swipe-delete-bg {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 120px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            background: #eef2f6;
-            padding: 0.55rem 1.4rem;
+            color: white;
+            font-weight: 700;
+            z-index: 1;
+        }
+
+        .subject-cell { font-weight: 700; color: #1a3f55; flex: 2; }
+        .time-cell { font-family: 'SF Mono', monospace; background: #f5faff; padding: 0.25rem 1rem; border-radius: 40px; margin-right: 1rem; }
+
+        .status-pill {
+            min-width: 120px;
+            padding: 0.55rem 1rem;
             border-radius: 60px;
             font-weight: 700;
             font-size: 0.8rem;
+            text-align: center;
             cursor: pointer;
-            transition: transform 0.07s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.07s;
             box-shadow: 0 5px 0 #9aaebf;
             transform: translateY(-2px);
-            will-change: transform;
-            border: none;
+            transition: 0.1s;
         }
 
-        .status-pill.completed {
-            background: #c2f0cf;
-            color: #166534;
-            box-shadow: 0 5px 0 #6f9e7c;
-        }
+        .status-pill.completed { background: #c2f0cf; color: #166534; box-shadow: 0 5px 0 #6f9e7c; }
+        .status-pill.not-completed { background: #ffe2db; color: #b1321e; box-shadow: 0 5px 0 #c28b7c; }
+        .status-pill:active { transform: translateY(2px); box-shadow: 0 0px 0 transparent; }
 
-        .status-pill.not-completed {
-            background: #ffe2db;
-            color: #b1321e;
-            box-shadow: 0 5px 0 #c28b7c;
-        }
-
-        .status-pill:active {
-            transform: translateX(5px) translateY(2px);
-            box-shadow: 0 1px 0 #7e8c9b;
-            transition: 0.02s;
-        }
-
-        /* uniform buttons premium */
+        .action-group { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; }
         .uniform-btn {
-            background: #2c5f6e;
-            border: none;
-            color: white;
-            font-weight: 700;
-            font-size: 0.85rem;
-            padding: 0.7rem 1.5rem;
-            border-radius: 50px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: 0.07s linear;
-            box-shadow: 0 4px 0 #1a3a44;
-            transform: translateY(-1px);
-            font-family: inherit;
+            background: #2c5f6e; border: none; color: white; font-weight: 700; padding: 0.7rem 1.5rem;
+            border-radius: 50px; cursor: pointer; box-shadow: 0 4px 0 #1a3a44;
         }
+        .uniform-btn:active { transform: translateY(3px); box-shadow: 0 0px 0 transparent; }
 
-        .uniform-btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 0px 0 #1a3a44;
-        }
-
-        .action-group {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .empty-row-msg td {
-            text-align: center;
-            padding: 2.5rem;
-            color: #6c8eaa;
-            font-weight: 500;
-        }
-
-        /* MODAL */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(6px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.15s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; visibility: hidden; opacity: 0; transition: 0.2s;
         }
-
-        .modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .modal-card {
-            background: white;
-            max-width: 400px;
-            width: 90%;
-            padding: 2rem;
-            border-radius: 2rem;
-            box-shadow: 0 25px 40px rgba(0,0,0,0.3);
-        }
-
-        .modal-card h3 {
-            margin-bottom: 1.2rem;
-            font-weight: 700;
-            color: #1f4e5e;
-            font-size: 1.5rem;
-        }
-
-        .modal-card input, .modal-card select {
-            width: 100%;
-            padding: 0.85rem;
-            margin: 0.7rem 0;
-            border: 1px solid #dce5ef;
-            border-radius: 60px;
-            font-size: 1rem;
-            background: #fefefe;
-        }
-
-        .time-select-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-            margin: 0.5rem 0;
-        }
-        .time-select-row select {
-            flex: 1;
-            background: white;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.8rem;
-            margin-top: 1.2rem;
-        }
-
-        .modal-actions button {
-            padding: 0.6rem 1.3rem;
-            border-radius: 40px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal-card { background: white; width: 90%; max-width: 400px; padding: 2rem; border-radius: 2rem; }
+        .modal-card input, .modal-card select { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border-radius: 50px; border: 1px solid #ddd; }
 
         @media (max-width: 700px) {
-            body { padding: 1rem; }
-            .timetable-card { padding: 1.2rem; }
             .careless-title { font-size: 2.2rem; }
-            .info-strip { flex-wrap: wrap; }
-            .live-time { margin-left: 0; }
+            .live-time { margin-left: 0; width: 100%; text-align: center; }
         }
     </style>
 </head>
@@ -333,330 +188,152 @@
     <div class="info-strip">
         <div class="calendar-box">
             <label>📅</label>
-            <input type="date" id="calendarSelect" value="2026-04-23">
+            <input type="date" id="calendarSelect">
         </div>
-        <div class="day-pill" id="dayPill">Thursday</div>
-        <div class="live-time" id="liveClock">--:--:--</div>
+        <div class="day-pill" id="dayPill">--</div>
+        <div class="live-time" id="liveClock">00:00:00 AM</div>
     </div>
 
-    <div class="timetable-wrapper">
-        <table class="timetable">
-            <thead>
-                <tr><th>Subject</th><th>Time</th><th>Status</th></tr>
-            </thead>
-            <tbody id="timetableBody">
-                <tr class="empty-row-msg"><td colspan="3">+ add task</td></tr>
-            </tbody>
-        </table>
+    <div class="timetable-swipe-container">
+        <div id="swipeList"></div>
     </div>
 
     <div class="action-group">
-        <button class="uniform-btn" id="clearAllBtn">🗑 Clear</button>
-        <button class="uniform-btn" id="addBtn">+ Add</button>
+        <button class="uniform-btn" onclick="clearAllTasks()">🗑 Clear All</button>
+        <button class="uniform-btn" onclick="openModal()">+ Add Task</button>
     </div>
 </div>
 
 <div id="modalOverlay" class="modal-overlay">
     <div class="modal-card">
         <h3>New Task</h3>
-        <input type="text" id="subjectInput" placeholder="Subject name" autocomplete="off">
-        <div class="time-select-row">
-            <select id="hourSelect">
-                <option value="12">12</option><option value="1">1</option><option value="2">2</option>
-                <option value="3">3</option><option value="4">4</option><option value="5">5</option>
-                <option value="6">6</option><option value="7">7</option><option value="8">8</option>
-                <option value="9">9</option><option value="10">10</option><option value="11">11</option>
-            </select>
-            <span>:</span>
-            <select id="minuteSelect">
-                <option value="00">00</option><option value="05">05</option><option value="10">10</option>
-                <option value="15">15</option><option value="20">20</option><option value="25">25</option>
-                <option value="30">30</option><option value="35">35</option><option value="40">40</option>
-                <option value="45">45</option><option value="50">50</option><option value="55">55</option>
-            </select>
-            <select id="ampmSelect">
-                <option value="AM">AM</option><option value="PM">PM</option>
-            </select>
+        <input type="text" id="subjectInput" placeholder="Subject Name">
+        <div style="display:flex; gap:5px;">
+            <select id="hourSelect"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option selected>12</option></select>
+            <select id="minuteSelect"><option>00</option><option>15</option><option>30</option><option>45</option></select>
+            <select id="ampmSelect"><option>AM</option><option>PM</option></select>
         </div>
-        <div class="modal-actions">
-            <button id="cancelModalBtn" style="background:#eef2f8;">Cancel</button>
-            <button id="saveModalBtn" style="background:#2c5f6e; color:white;">Save</button>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
+            <button onclick="closeModal()" style="background:#eee; border:none; padding:10px 20px; border-radius:20px;">Cancel</button>
+            <button onclick="onSave()" style="background:#2c5f6e; color:white; border:none; padding:10px 20px; border-radius:20px;">Save</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ========== PER-DAY COMPLETION STATUS ==========
-    // Base tasks: { id, subject, time } (shared across days)
-    let baseTasks = [];          
-    // Completion map: { "YYYY-MM-DD_taskId": boolean }
+    let baseTasks = [];
     let completionMap = {};
-
     let currentDate = "";
-
-    // Audio (tin sound)
     let audioCtx = null;
+
     function playTinSound() {
         try {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.value = 880;
-            gain.gain.setValueAtTime(0.12, now);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
-            osc.start();
-            osc.stop(now + 0.22);
-        } catch(e) { console.log("audio not supported"); }
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.value = 800; gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        } catch(e) {}
     }
 
-    function generateId() { return Date.now() + '-' + Math.random().toString(36).substring(2, 10); }
-
-    function saveToLocal() {
-        const dataToStore = {
-            tasks: baseTasks,
-            completions: completionMap
-        };
-        localStorage.setItem("careless_premium_timetable", JSON.stringify(dataToStore));
+    function save() { localStorage.setItem("careless_v2", JSON.stringify({baseTasks, completionMap})); }
+    
+    function load() {
+        const data = JSON.parse(localStorage.getItem("careless_v2") || "{}");
+        baseTasks = data.baseTasks || [];
+        completionMap = data.completionMap || {};
     }
 
-    function loadFromLocal() {
-        const stored = localStorage.getItem("careless_premium_timetable");
-        if (stored) {
-            try {
-                const parsed = JSON.parse(stored);
-                if (parsed.tasks && Array.isArray(parsed.tasks)) baseTasks = parsed.tasks;
-                else baseTasks = [];
-                if (parsed.completions && typeof parsed.completions === 'object') completionMap = parsed.completions;
-                else completionMap = {};
-            } catch(e) { baseTasks = []; completionMap = {}; }
-        }
-        // seed demo data with proper per-day completion example: yesterday physics completed, today not completed
+    function renderSwipeList() {
+        const container = document.getElementById('swipeList');
         if (baseTasks.length === 0) {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdayStr = yesterday.toISOString().slice(0,10);
-            const todayStr = new Date().toISOString().slice(0,10);
-            
-            const physicsId = generateId();
-            const mathId = generateId();
-            
-            baseTasks = [
-                { id: physicsId, subject: "Physics", time: "09:30 AM" },
-                { id: mathId, subject: "Mathematics", time: "11:15 AM" }
-            ];
-            
-            // yesterday: physics completed, math not completed
-            completionMap[`${yesterdayStr}_${physicsId}`] = true;
-            completionMap[`${yesterdayStr}_${mathId}`] = false;
-            // today: physics NOT completed, math completed (to demonstrate difference)
-            completionMap[`${todayStr}_${physicsId}`] = false;
-            completionMap[`${todayStr}_${mathId}`] = true;
-            
-            saveToLocal();
-        }
-    }
-
-    // Get completion status for a specific task on current date
-    function getCompletionStatus(taskId) {
-        const key = `${currentDate}_${taskId}`;
-        return completionMap[key] === true;
-    }
-
-    // Set completion status for a task on current date
-    function setCompletionStatus(taskId, completed) {
-        const key = `${currentDate}_${taskId}`;
-        if (completed === true) completionMap[key] = true;
-        else if (completed === false) completionMap[key] = false;
-        else delete completionMap[key];
-        saveToLocal();
-    }
-
-    function toggleTaskCompletion(taskId) {
-        const currentStatus = getCompletionStatus(taskId);
-        const newStatus = !currentStatus;
-        setCompletionStatus(taskId, newStatus);
-        playTinSound();
-        renderTimetable();   // refresh pill UI
-    }
-
-    function renderTimetable() {
-        const tbody = document.getElementById("timetableBody");
-        if (!baseTasks.length) {
-            tbody.innerHTML = `<tr class="empty-row-msg"><td colspan="3">No tasks · tap + Add</td></tr>`;
+            container.innerHTML = '<div style="padding:2rem; text-align:center; color:#888;">No tasks. Swipe left to delete once added!</div>';
             return;
         }
-        let html = '';
-        baseTasks.forEach(task => {
-            const isCompleted = getCompletionStatus(task.id);
-            const statusClass = isCompleted ? "status-pill completed" : "status-pill not-completed";
-            const statusLabel = isCompleted ? "Completed ✓" : "Not completed";
-            html += `
-                <tr data-task-id="${task.id}">
-                    <td class="subject-cell">${escapeHtml(task.subject)}</td>
-                    <td><span class="time-cell">${escapeHtml(task.time)}</span></td>
-                    <td>
-                        <div class="${statusClass}" data-id="${task.id}">
-                            ${statusLabel}
+        container.innerHTML = baseTasks.map(t => {
+            const isDone = completionMap[`${currentDate}_${t.id}`];
+            return `
+                <div class="swipe-item">
+                    <div class="swipe-delete-bg">🗑 Delete</div>
+                    <div class="swipe-row-content" data-id="${t.id}">
+                        <div class="subject-cell">${t.subject}</div>
+                        <div style="display:flex; align-items:center;">
+                            <span class="time-cell">${t.time}</span>
+                            <div class="status-pill ${isDone?'completed':'not-completed'}" onclick="toggleDone('${t.id}')">
+                                ${isDone?'Completed ✓':'Not completed'}
+                            </div>
                         </div>
-                    </td>
-                </tr>
-            `;
+                    </div>
+                </div>`;
+        }).join('');
+
+        document.querySelectorAll('.swipe-row-content').forEach(el => attachSwipe(el));
+    }
+
+    function attachSwipe(el) {
+        let startX = 0, currentX = 0;
+        el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; el.style.transition = 'none'; }, {passive: true});
+        el.addEventListener('touchmove', e => {
+            currentX = e.touches[0].clientX - startX;
+            if (currentX > 0) currentX = 0;
+            if (currentX < -100) currentX = -100;
+            el.style.transform = `translateX(${currentX}px)`;
+        }, {passive: true});
+        el.addEventListener('touchend', () => {
+            el.style.transition = 'transform 0.3s ease';
+            if (currentX < -70) {
+                el.style.transform = 'translateX(-100%)';
+                setTimeout(() => {
+                    baseTasks = baseTasks.filter(t => t.id != el.dataset.id);
+                    save(); renderSwipeList(); playTinSound();
+                }, 200);
+            } else {
+                el.style.transform = 'translateX(0px)';
+            }
         });
-        tbody.innerHTML = html;
-        
-        document.querySelectorAll('.status-pill').forEach(pill => {
-            pill.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const taskId = pill.getAttribute('data-id');
-                if (taskId) toggleTaskCompletion(taskId);
-            });
-        });
     }
 
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
+    function toggleDone(id) {
+        const key = `${currentDate}_${id}`;
+        completionMap[key] = !completionMap[key];
+        save(); renderSwipeList(); playTinSound();
     }
 
-    // Add new task (subject + time from dropdowns)
-    function addTask(subject, hourVal, minuteVal, ampm) {
-        if (!subject.trim()) { alert("Subject required"); return false; }
-        const hourInt = parseInt(hourVal, 10);
-        const minutePadded = minuteVal.padStart(2, '0');
-        const timeString = `${hourInt}:${minutePadded} ${ampm}`;
-        const newTask = {
-            id: generateId(),
-            subject: subject.trim(),
-            time: timeString
-        };
-        baseTasks.push(newTask);
-        // No default completion status for any date (undefined = false)
-        saveToLocal();
-        renderTimetable();
-        return true;
-    }
-
-    function clearAllTasks() {
-        if (confirm("Delete ALL tasks for all days?")) {
-            baseTasks = [];
-            completionMap = {};
-            saveToLocal();
-            renderTimetable();
-        }
-    }
-
-    // Calendar and day pill
-    function updateDayPill(dateStr) {
-        const dateObj = new Date(dateStr + "T12:00:00");
-        const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
-        document.getElementById("dayPill").innerText = dayName;
-    }
-
-    function setCurrentDate(dateStr) {
-        currentDate = dateStr;
-        const picker = document.getElementById("calendarSelect");
-        if (picker.value !== dateStr) picker.value = dateStr;
-        updateDayPill(dateStr);
-        renderTimetable();
-    }
-
-    // Live clock with seconds
-    function startLiveClock() {
-        function updateClock() {
-            const now = new Date();
-            let hours = now.getHours();
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            let hour12 = hours % 12;
-            if (hour12 === 0) hour12 = 12;
-            const timeString = `${hour12}:${minutes}:${seconds} ${ampm}`;
-            const clockEl = document.getElementById("liveClock");
-            if (clockEl) clockEl.innerText = timeString;
-        }
-        updateClock();
-        setInterval(updateClock, 1000);
-    }
-
-    // Modal logic with time selects
-    const modal = document.getElementById("modalOverlay");
-    const subjectInput = document.getElementById("subjectInput");
-    const hourSelect = document.getElementById("hourSelect");
-    const minuteSelect = document.getElementById("minuteSelect");
-    const ampmSelect = document.getElementById("ampmSelect");
-    const saveModalBtn = document.getElementById("saveModalBtn");
-    const cancelModalBtn = document.getElementById("cancelModalBtn");
-    const addMainBtn = document.getElementById("addBtn");
-
-    function openModal() {
-        subjectInput.value = '';
-        const now = new Date();
-        let hour = now.getHours() % 12;
-        if (hour === 0) hour = 12;
-        const minute = now.getMinutes();
-        const minuteRounded = Math.floor(minute / 5) * 5;
-        const minuteValue = minuteRounded < 10 ? `0${minuteRounded}` : `${minuteRounded}`;
-        const ampmValue = now.getHours() >= 12 ? 'PM' : 'AM';
-        hourSelect.value = hour.toString();
-        minuteSelect.value = minuteValue;
-        ampmSelect.value = ampmValue;
-        modal.classList.add('active');
-    }
-
-    function closeModal() { modal.classList.remove('active'); }
+    function openModal() { document.getElementById('modalOverlay').classList.add('active'); }
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
 
     function onSave() {
-        const subject = subjectInput.value.trim();
-        const hour = hourSelect.value;
-        const minute = minuteSelect.value;
-        const ampm = ampmSelect.value;
-        if (addTask(subject, hour, minute, ampm)) closeModal();
+        const sub = document.getElementById('subjectInput').value;
+        if (!sub) return;
+        const time = `${document.getElementById('hourSelect').value}:${document.getElementById('minuteSelect').value} ${document.getElementById('ampmSelect').value}`;
+        baseTasks.push({id: Date.now(), subject: sub, time: time});
+        save(); renderSwipeList(); closeModal();
     }
 
-    function enableAudioOnFirstTap() {
-        const resumeAudio = () => {
-            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-            else if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                audioCtx.resume();
-            }
-            document.removeEventListener('click', resumeAudio);
-            document.removeEventListener('touchstart', resumeAudio);
-        };
-        document.addEventListener('click', resumeAudio);
-        document.addEventListener('touchstart', resumeAudio);
-    }
-
-    function bindEvents() {
-        const datePicker = document.getElementById("calendarSelect");
-        datePicker.addEventListener("change", (e) => setCurrentDate(e.target.value));
-        addMainBtn.addEventListener("click", openModal);
-        document.getElementById("clearAllBtn").addEventListener("click", clearAllTasks);
-        saveModalBtn.addEventListener("click", onSave);
-        cancelModalBtn.addEventListener("click", closeModal);
-        modal.addEventListener("click", (e) => { if(e.target === modal) closeModal(); });
-        subjectInput.addEventListener("keypress", (e) => { if(e.key === "Enter") onSave(); });
-    }
+    function clearAllTasks() { if(confirm("Clear everything?")) { baseTasks = []; completionMap = {}; save(); renderSwipeList(); } }
 
     function init() {
-        loadFromLocal();
-        bindEvents();
-        const today = new Date().toISOString().slice(0,10);
-        setCurrentDate(today);
-        startLiveClock();
-        enableAudioOnFirstTap();
-        renderTimetable();
+        load();
+        const dateInput = document.getElementById('calendarSelect');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+        currentDate = today;
+        dateInput.onchange = (e) => { currentDate = e.target.value; updateDayPill(); renderSwipeList(); };
+        
+        const updateDayPill = () => {
+            const d = new Date(currentDate + "T12:00:00");
+            document.getElementById('dayPill').innerText = d.toLocaleDateString('en-US', {weekday:'long'});
+        };
+
+        setInterval(() => {
+            document.getElementById('liveClock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        }, 1000);
+
+        updateDayPill();
+        renderSwipeList();
     }
 
     init();
