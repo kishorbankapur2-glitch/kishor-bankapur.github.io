@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Careless Timetable · Swipe to Delete</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Careless Timetable · Chronological Order</title>
     <style>
         * {
             margin: 0;
@@ -22,7 +22,6 @@
             font-family: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
 
-        /* MAIN CARD - premium glass */
         .timetable-card {
             max-width: 1300px;
             width: 100%;
@@ -35,7 +34,7 @@
         }
 
         .careless-title {
-            font-family: 'Playfair Display', 'Georgia', serif;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
             font-size: 3.2rem;
             font-weight: 800;
             letter-spacing: -0.3px;
@@ -46,6 +45,7 @@
             border-left: 7px solid #e67e22;
             padding-left: 1.2rem;
             margin-bottom: 0.1rem;
+            text-shadow: 2px 4px 12px rgba(0,0,0,0.04);
         }
 
         .info-strip {
@@ -67,6 +67,13 @@
             background: white;
             padding: 0.3rem 1.2rem;
             border-radius: 60px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .calendar-box label {
+            font-weight: 600;
+            color: #2c5a74;
+            font-size: 0.85rem;
         }
 
         input[type="date"] {
@@ -74,8 +81,10 @@
             background: #f0f4fa;
             padding: 0.5rem 1rem;
             border-radius: 40px;
+            font-weight: 500;
             font-family: 'SF Mono', monospace;
             font-size: 0.9rem;
+            cursor: pointer;
         }
 
         .day-pill {
@@ -84,7 +93,12 @@
             padding: 0.55rem 1.5rem;
             border-radius: 100px;
             font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
             box-shadow: 0 3px 0 #141f2a;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .live-time {
@@ -92,91 +106,146 @@
             color: #eef5ff;
             padding: 0.5rem 1.3rem;
             border-radius: 60px;
-            font-family: 'SF Mono', monospace;
+            font-family: 'SF Mono', 'JetBrains Mono', monospace;
             font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            box-shadow: inset 0 1px 3px #4a627a, 0 2px 6px rgba(0,0,0,0.1);
             margin-left: auto;
         }
 
         .timetable-swipe-container {
-            overflow: hidden;
+            overflow-x: hidden;
             border-radius: 1.5rem;
             background: #ffffff;
+            margin: 0.8rem 0 1rem;
             border: 1px solid #eef2f8;
         }
+
+        .swipe-list { width: 100%; }
 
         .swipe-item {
             position: relative;
             width: 100%;
+            overflow: hidden;
             border-bottom: 1px solid #ecf3f9;
-            background: #e74c3c; /* Background color revealed on swipe */
+            transition: all 0.2s ease;
+            background: white;
+            touch-action: pan-y pinch-zoom;
+        }
+        
+        .drag-handle {
+            cursor: grab;
+            touch-action: none;
+            display: inline-flex;
+            align-items: center;
+            margin-right: 12px;
+            color: #8aaec0;
+            font-size: 1.2rem;
+            font-weight: 300;
+            user-select: none;
         }
 
         .swipe-row-content {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1.1rem 1rem;
+            padding: 1rem;
             background: white;
             position: relative;
             z-index: 2;
-            touch-action: pan-y;
-            user-select: none;
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
 
         .swipe-delete-bg {
             position: absolute;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            width: 120px;
+            right: 0; top: 0; bottom: 0;
+            width: 100px;
+            background: #e74c3c;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 700;
+            font-size: 0.9rem;
             z-index: 1;
         }
 
-        .subject-cell { font-weight: 700; color: #1a3f55; flex: 2; }
-        .time-cell { font-family: 'SF Mono', monospace; background: #f5faff; padding: 0.25rem 1rem; border-radius: 40px; margin-right: 1rem; }
+        .subject-cell {
+            font-weight: 700;
+            color: #1a3f55;
+            font-size: 1rem;
+            flex: 2;
+            display: flex;
+            align-items: center;
+        }
+
+        .time-cell {
+            font-family: 'SF Mono', monospace;
+            font-weight: 500;
+            background: #f5faff;
+            padding: 0.25rem 1rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            margin-right: 1rem;
+            white-space: nowrap;
+        }
 
         .status-pill {
-            min-width: 120px;
-            padding: 0.55rem 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef2f6;
+            padding: 0.55rem 1.4rem;
             border-radius: 60px;
             font-weight: 700;
             font-size: 0.8rem;
-            text-align: center;
             cursor: pointer;
             box-shadow: 0 5px 0 #9aaebf;
             transform: translateY(-2px);
-            transition: 0.1s;
+            min-width: 120px;
         }
 
         .status-pill.completed { background: #c2f0cf; color: #166534; box-shadow: 0 5px 0 #6f9e7c; }
         .status-pill.not-completed { background: #ffe2db; color: #b1321e; box-shadow: 0 5px 0 #c28b7c; }
-        .status-pill:active { transform: translateY(2px); box-shadow: 0 0px 0 transparent; }
+        .status-pill:active { transform: translateY(2px); box-shadow: 0 1px 0 #7e8c9b; }
+
+        .uniform-btn {
+            background: #2c5f6e;
+            border: none;
+            color: white;
+            font-weight: 700;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #1a3a44;
+        }
 
         .action-group { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; }
-        .uniform-btn {
-            background: #2c5f6e; border: none; color: white; font-weight: 700; padding: 0.7rem 1.5rem;
-            border-radius: 50px; cursor: pointer; box-shadow: 0 4px 0 #1a3a44;
+
+        .confirm-toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) scale(0.9);
+            background: #1e2a36; color: white; padding: 0.8rem 1.8rem; border-radius: 60px;
+            display: flex; gap: 20px; align-items: center; z-index: 1200;
+            opacity: 0; visibility: hidden; transition: 0.1s;
         }
-        .uniform-btn:active { transform: translateY(3px); box-shadow: 0 0px 0 transparent; }
+        .confirm-toast.active { opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); }
+        .confirm-toast button { border: none; padding: 0.4rem 1.2rem; border-radius: 40px; font-weight: bold; cursor: pointer; }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(6px);
             display: flex; align-items: center; justify-content: center;
-            z-index: 1000; visibility: hidden; opacity: 0; transition: 0.2s;
+            z-index: 1000; visibility: hidden; opacity: 0; transition: 0.15s;
         }
         .modal-overlay.active { visibility: visible; opacity: 1; }
-        .modal-card { background: white; width: 90%; max-width: 400px; padding: 2rem; border-radius: 2rem; }
-        .modal-card input, .modal-card select { width: 100%; padding: 0.8rem; margin: 0.5rem 0; border-radius: 50px; border: 1px solid #ddd; }
+        .modal-card { background: white; max-width: 400px; width: 90%; padding: 2rem; border-radius: 2rem; }
+        .modal-card input, .modal-card select { width: 100%; padding: 0.85rem; margin: 0.7rem 0; border: 1px solid #dce5ef; border-radius: 60px; }
 
         @media (max-width: 700px) {
             .careless-title { font-size: 2.2rem; }
-            .live-time { margin-left: 0; width: 100%; text-align: center; }
+            .info-strip { flex-wrap: wrap; }
+            .live-time { margin-left: 0; }
         }
     </style>
 </head>
@@ -184,38 +253,44 @@
 
 <div class="timetable-card">
     <div class="careless-title">Careless Time Table</div>
-
     <div class="info-strip">
-        <div class="calendar-box">
-            <label>📅</label>
-            <input type="date" id="calendarSelect">
-        </div>
+        <div class="calendar-box"><label>📅</label><input type="date" id="calendarSelect"></div>
         <div class="day-pill" id="dayPill">--</div>
-        <div class="live-time" id="liveClock">00:00:00 AM</div>
+        <div class="live-time" id="liveClock">--:--:--</div>
     </div>
-
-    <div class="timetable-swipe-container">
-        <div id="swipeList"></div>
-    </div>
-
+    <div class="timetable-swipe-container"><div id="swipeList" class="swipe-list"></div></div>
     <div class="action-group">
-        <button class="uniform-btn" onclick="clearAllTasks()">🗑 Clear All</button>
-        <button class="uniform-btn" onclick="openModal()">+ Add Task</button>
+        <button class="uniform-btn" id="clearAllBtn">🗑 Clear All</button>
+        <button class="uniform-btn" id="addBtn">+ Add Task</button>
     </div>
+</div>
+
+<div id="confirmToast" class="confirm-toast">
+    <span>Delete task?</span>
+    <button style="background:#e74c3c; color:white;" id="confirmDeleteYes">Yes</button>
+    <button style="background:#bdc3c7;" id="confirmDeleteNo">No</button>
 </div>
 
 <div id="modalOverlay" class="modal-overlay">
     <div class="modal-card">
         <h3>New Task</h3>
-        <input type="text" id="subjectInput" placeholder="Subject Name">
-        <div style="display:flex; gap:5px;">
-            <select id="hourSelect"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option selected>12</option></select>
-            <select id="minuteSelect"><option>00</option><option>15</option><option>30</option><option>45</option></select>
-            <select id="ampmSelect"><option>AM</option><option>PM</option></select>
+        <input type="text" id="subjectInput" placeholder="Subject name">
+        <div style="display:flex; gap:10px; align-items:center;">
+            <select id="hourSelect">
+                <option value="12">12</option><option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                <option value="6">6</option><option value="7">7</option><option value="8">8</option>
+                <option value="9">9</option><option value="10">10</option><option value="11">11</option>
+            </select>
+            <span>:</span>
+            <select id="minuteSelect">
+                <option value="00">00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option>
+            </select>
+            <select id="ampmSelect"><option value="AM">AM</option><option value="PM">PM</option></select>
         </div>
-        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
-            <button onclick="closeModal()" style="background:#eee; border:none; padding:10px 20px; border-radius:20px;">Cancel</button>
-            <button onclick="onSave()" style="background:#2c5f6e; color:white; border:none; padding:10px 20px; border-radius:20px;">Save</button>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:1rem;">
+            <button id="cancelModalBtn" style="padding:0.6rem 1rem; border-radius:40px; border:none;">Cancel</button>
+            <button id="saveModalBtn" style="padding:0.6rem 1rem; border-radius:40px; border:none; background:#2c5f6e; color:white;">Save</button>
         </div>
     </div>
 </div>
@@ -224,119 +299,133 @@
     let baseTasks = [];
     let completionMap = {};
     let currentDate = "";
+    let pendingDeleteTaskId = null;
     let audioCtx = null;
+
+    // --- TIME SORTING LOGIC ---
+    function timeToMinutes(timeStr) {
+        const [time, modifier] = timeStr.split(' ');
+        let [hours, minutes] = time.split(':');
+        hours = parseInt(hours, 10);
+        if (modifier === 'PM' && hours !== 12) hours += 12;
+        if (modifier === 'AM' && hours === 12) hours = 0;
+        return hours * 60 + parseInt(minutes, 10);
+    }
+
+    function sortTasks() {
+        baseTasks.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
+    }
 
     function playTinSound() {
         try {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.value = 800; gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            osc.frequency.value = 880; gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+            osc.start(); osc.stop(now + 0.3);
         } catch(e) {}
     }
 
-    function save() { localStorage.setItem("careless_v2", JSON.stringify({baseTasks, completionMap})); }
-    
-    function load() {
-        const data = JSON.parse(localStorage.getItem("careless_v2") || "{}");
-        baseTasks = data.baseTasks || [];
-        completionMap = data.completionMap || {};
+    function saveToLocal() {
+        localStorage.setItem("careless_premium_timetable", JSON.stringify({tasks: baseTasks, completions: completionMap}));
+    }
+
+    function loadFromLocal() {
+        const stored = localStorage.getItem("careless_premium_timetable");
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            baseTasks = parsed.tasks || [];
+            completionMap = parsed.completions || {};
+            sortTasks();
+        }
     }
 
     function renderSwipeList() {
         const container = document.getElementById('swipeList');
-        if (baseTasks.length === 0) {
-            container.innerHTML = '<div style="padding:2rem; text-align:center; color:#888;">No tasks. Swipe left to delete once added!</div>';
-            return;
-        }
-        container.innerHTML = baseTasks.map(t => {
-            const isDone = completionMap[`${currentDate}_${t.id}`];
+        if (!baseTasks.length) { container.innerHTML = '<div style="padding:2rem; text-align:center; color:#666;">No tasks</div>'; return; }
+        
+        container.innerHTML = baseTasks.map(task => {
+            const isDone = completionMap[`${currentDate}_${task.id}`];
             return `
-                <div class="swipe-item">
-                    <div class="swipe-delete-bg">🗑 Delete</div>
-                    <div class="swipe-row-content" data-id="${t.id}">
-                        <div class="subject-cell">${t.subject}</div>
+                <div class="swipe-item" data-id="${task.id}">
+                    <div class="swipe-delete-bg">🗑</div>
+                    <div class="swipe-row-content">
+                        <div class="subject-cell"><span class="drag-handle">⋮⋮</span>${task.subject}</div>
                         <div style="display:flex; align-items:center;">
-                            <span class="time-cell">${t.time}</span>
-                            <div class="status-pill ${isDone?'completed':'not-completed'}" onclick="toggleDone('${t.id}')">
-                                ${isDone?'Completed ✓':'Not completed'}
+                            <span class="time-cell">${task.time}</span>
+                            <div class="status-pill ${isDone ? 'completed' : 'not-completed'}" onclick="toggleStatus('${task.id}')">
+                                ${isDone ? 'Done' : 'Pending'}
                             </div>
                         </div>
                     </div>
                 </div>`;
         }).join('');
-
-        document.querySelectorAll('.swipe-row-content').forEach(el => attachSwipe(el));
+        
+        container.querySelectorAll('.swipe-item').forEach(el => attachSwipe(el, el.dataset.id));
     }
 
-    function attachSwipe(el) {
+    function attachSwipe(el, id) {
         let startX = 0, currentX = 0;
-        el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; el.style.transition = 'none'; }, {passive: true});
-        el.addEventListener('touchmove', e => {
-            currentX = e.touches[0].clientX - startX;
-            if (currentX > 0) currentX = 0;
-            if (currentX < -100) currentX = -100;
-            el.style.transform = `translateX(${currentX}px)`;
-        }, {passive: true});
-        el.addEventListener('touchend', () => {
-            el.style.transition = 'transform 0.3s ease';
-            if (currentX < -70) {
-                el.style.transform = 'translateX(-100%)';
-                setTimeout(() => {
-                    baseTasks = baseTasks.filter(t => t.id != el.dataset.id);
-                    save(); renderSwipeList(); playTinSound();
-                }, 200);
-            } else {
-                el.style.transform = 'translateX(0px)';
-            }
+        const content = el.querySelector('.swipe-row-content');
+        content.addEventListener('touchstart', e => { startX = e.touches[0].clientX; content.style.transition = 'none'; }, {passive:true});
+        content.addEventListener('touchmove', e => {
+            currentX = Math.max(-100, Math.min(0, e.touches[0].clientX - startX));
+            content.style.transform = `translateX(${currentX}px)`;
+        }, {passive:true});
+        content.addEventListener('touchend', () => {
+            content.style.transition = '0.2s';
+            if (currentX < -60) { pendingDeleteTaskId = id; document.getElementById('confirmToast').classList.add('active'); }
+            content.style.transform = 'translateX(0)';
         });
     }
 
-    function toggleDone(id) {
+    function toggleStatus(id) {
         const key = `${currentDate}_${id}`;
         completionMap[key] = !completionMap[key];
-        save(); renderSwipeList(); playTinSound();
+        saveToLocal(); playTinSound(); renderSwipeList();
     }
 
-    function openModal() { document.getElementById('modalOverlay').classList.add('active'); }
-    function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
+    function updateDay(dateStr) {
+        const d = new Date(dateStr + "T12:00:00");
+        document.getElementById("dayPill").innerText = d.toLocaleDateString('en-US', {weekday:'long'});
+        currentDate = dateStr; renderSwipeList();
+    }
 
-    function onSave() {
-        const sub = document.getElementById('subjectInput').value;
+    document.getElementById("saveModalBtn").onclick = () => {
+        const sub = document.getElementById("subjectInput").value;
         if (!sub) return;
-        const time = `${document.getElementById('hourSelect').value}:${document.getElementById('minuteSelect').value} ${document.getElementById('ampmSelect').value}`;
-        baseTasks.push({id: Date.now(), subject: sub, time: time});
-        save(); renderSwipeList(); closeModal();
-    }
+        const time = `${document.getElementById("hourSelect").value}:${document.getElementById("minuteSelect").value} ${document.getElementById("ampmSelect").value}`;
+        baseTasks.push({id: Date.now().toString(), subject: sub, time: time});
+        sortTasks(); saveToLocal(); renderSwipeList();
+        document.getElementById("modalOverlay").classList.remove('active');
+    };
 
-    function clearAllTasks() { if(confirm("Clear everything?")) { baseTasks = []; completionMap = {}; save(); renderSwipeList(); } }
+    document.getElementById("confirmDeleteYes").onclick = () => {
+        baseTasks = baseTasks.filter(t => t.id !== pendingDeleteTaskId);
+        saveToLocal(); renderSwipeList();
+        document.getElementById('confirmToast').classList.remove('active');
+    };
 
-    function init() {
-        load();
-        const dateInput = document.getElementById('calendarSelect');
-        const today = new Date().toISOString().split('T')[0];
-        dateInput.value = today;
-        currentDate = today;
-        dateInput.onchange = (e) => { currentDate = e.target.value; updateDayPill(); renderSwipeList(); };
-        
-        const updateDayPill = () => {
-            const d = new Date(currentDate + "T12:00:00");
-            document.getElementById('dayPill').innerText = d.toLocaleDateString('en-US', {weekday:'long'});
-        };
+    document.getElementById("confirmDeleteNo").onclick = () => document.getElementById('confirmToast').classList.remove('active');
+    document.getElementById("addBtn").onclick = () => document.getElementById("modalOverlay").classList.add('active');
+    document.getElementById("cancelModalBtn").onclick = () => document.getElementById("modalOverlay").classList.remove('active');
+    document.getElementById("calendarSelect").onchange = e => updateDay(e.target.value);
+    document.getElementById("clearAllBtn").onclick = () => { if(confirm("Clear everything?")){ baseTasks=[]; completionMap={}; saveToLocal(); renderSwipeList(); } };
 
-        setInterval(() => {
-            document.getElementById('liveClock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-        }, 1000);
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById("liveClock").innerText = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    }, 1000);
 
-        updateDayPill();
-        renderSwipeList();
-    }
-
-    init();
+    loadFromLocal();
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById("calendarSelect").value = today;
+    updateDay(today);
 </script>
+
 </body>
 </html>
