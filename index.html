@@ -31,6 +31,16 @@
             box-shadow: 0 25px 45px -15px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255,255,255,0.6);
             padding: 2rem;
             transition: all 0.2s;
+            position: relative;
+        }
+
+        /* Header with gear button */
+        .header-with-gear {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
         }
 
         .careless-title {
@@ -46,6 +56,29 @@
             padding-left: 1.2rem;
             margin-bottom: 0.1rem;
             text-shadow: 2px 4px 12px rgba(0,0,0,0.04);
+        }
+
+        .gear-icon {
+            background: #f0f4fa;
+            border: 1px solid #dce5ef;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #2c6285;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            margin-left: auto;
+        }
+
+        .gear-icon:hover {
+            background: #e8edf5;
+            transform: rotate(15deg);
+            color: #e67e22;
         }
 
         .info-strip {
@@ -242,17 +275,202 @@
         .modal-card { background: white; max-width: 400px; width: 90%; padding: 2rem; border-radius: 2rem; }
         .modal-card input, .modal-card select { width: 100%; padding: 0.85rem; margin: 0.7rem 0; border: 1px solid #dce5ef; border-radius: 60px; }
 
+        /* GEAR SETTINGS PANEL - Glassmorphism style matching original aesthetic */
+        .settings-panel-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.25s ease;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .settings-panel-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .settings-panel {
+            width: 480px;
+            max-width: 90vw;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: -8px 0 30px rgba(0, 0, 0, 0.15);
+            border-left: 1px solid #e0e8f0;
+            padding: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .settings-panel-overlay.active .settings-panel {
+            transform: translateX(0);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #e0e8f0;
+        }
+
+        .panel-header h2 {
+            font-family: 'Playfair Display', serif;
+            color: #1a3a4c;
+            font-size: 1.6rem;
+        }
+
+        .close-panel {
+            background: #eef2f6;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c5a74;
+            transition: all 0.2s;
+        }
+
+        .close-panel:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .day-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 0.5rem 0;
+        }
+
+        .day-tab {
+            background: #f0f4fa;
+            padding: 0.5rem 1.2rem;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #2c5a74;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .day-tab.active-tab {
+            background: #2c5f6e;
+            color: white;
+            border-color: #e67e22;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .panel-task-list {
+            background: #f8fafd;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            max-height: 380px;
+            overflow-y: auto;
+            border: 1px solid #eef2f8;
+        }
+
+        .panel-task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 0.7rem 1rem;
+            margin-bottom: 0.6rem;
+            border-radius: 60px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .panel-task-info {
+            font-weight: 600;
+            color: #1a3f55;
+        }
+
+        .panel-task-time {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #6c8ea0;
+            margin-left: 10px;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mini-btn {
+            background: #eef2f6;
+            border: none;
+            padding: 0.35rem 1rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: all 0.1s;
+        }
+
+        .mini-btn.danger {
+            background: #ffe2db;
+            color: #b1321e;
+        }
+
+        .mini-btn.primary {
+            background: #2c5f6e;
+            color: white;
+        }
+
+        .add-panel-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 0.5rem;
+        }
+
+        .copy-reset-btns {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .selected-day-label {
+            font-weight: 600;
+            color: #2c5a74;
+            background: #f0f4fa;
+            padding: 0.3rem 1rem;
+            border-radius: 60px;
+            display: inline-block;
+        }
+
         @media (max-width: 700px) {
             .careless-title { font-size: 2.2rem; }
             .info-strip { flex-wrap: wrap; }
             .live-time { margin-left: 0; }
+            .settings-panel { width: 100%; }
         }
     </style>
 </head>
 <body>
 
 <div class="timetable-card">
-    <div class="careless-title">Careless Time Table</div>
+    <div class="header-with-gear">
+        <div class="careless-title">Careless Time Table</div>
+        <div class="gear-icon" id="openGearBtn">⚙️</div>
+    </div>
     <div class="info-strip">
         <div class="calendar-box"><label>📅</label><input type="date" id="calendarSelect"></div>
         <div class="day-pill" id="dayPill">--</div>
@@ -295,14 +513,50 @@
     </div>
 </div>
 
+<!-- GEAR SETTINGS PANEL (Multi-Day Management) -->
+<div id="settingsPanelOverlay" class="settings-panel-overlay">
+    <div class="settings-panel">
+        <div class="panel-header">
+            <h2>⚙️ Day Manager</h2>
+            <button class="close-panel" id="closeGearPanelBtn">✕</button>
+        </div>
+        <div class="day-tabs" id="dayTabsContainer"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="selected-day-label" id="selectedDayLabel">Monday</span>
+            <button id="panelAddTaskBtn" class="mini-btn primary">+ Add to this day</button>
+        </div>
+        <div id="panelTaskList" class="panel-task-list"></div>
+        <div class="copy-reset-btns">
+            <button id="copyMondayBtn" class="mini-btn primary">📋 Copy Monday to All</button>
+            <button id="resetSelectedDayBtn" class="mini-btn danger">🗑 Reset This Day</button>
+        </div>
+        <div style="font-size: 0.7rem; text-align: center; color: #8aaec0; margin-top: 0.5rem;">
+            swipe tasks left to delete on main view
+        </div>
+    </div>
+</div>
+
 <script>
+    // ======================= ORIGINAL CODE PRESERVED WITH MULTI-DAY UPGRADE =======================
     let baseTasks = [];
     let completionMap = {};
     let currentDate = "";
     let pendingDeleteTaskId = null;
     let audioCtx = null;
 
-    // --- TIME SORTING LOGIC ---
+    // NEW MULTI-DAY STRUCTURE (backward compatible)
+    let tasksByDay = {
+        Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: []
+    };
+    let currentWeekday = "Monday";
+
+    // Helper: convert date to weekday name
+    function getWeekdayFromDate(dateStr) {
+        const d = new Date(dateStr + "T12:00:00");
+        return d.toLocaleDateString('en-US', { weekday: 'long' });
+    }
+
+    // TIME SORTING LOGIC
     function timeToMinutes(timeStr) {
         const [time, modifier] = timeStr.split(' ');
         let [hours, minutes] = time.split(':');
@@ -312,8 +566,76 @@
         return hours * 60 + parseInt(minutes, 10);
     }
 
-    function sortTasks() {
-        baseTasks.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
+    function sortTasks(dayArray) {
+        dayArray.sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
+    }
+
+    function sortAllDays() {
+        for (let day in tasksByDay) {
+            sortTasks(tasksByDay[day]);
+        }
+    }
+
+    // MIGRATION: convert old single list to Monday
+    function migrateOldData() {
+        if (baseTasks && baseTasks.length > 0) {
+            tasksByDay.Monday = [...baseTasks];
+            sortTasks(tasksByDay.Monday);
+            baseTasks = []; // clear old to avoid duplication
+            saveToLocal();
+            return true;
+        }
+        return false;
+    }
+
+    function saveToLocal() {
+        const storageData = {
+            tasksByDay: tasksByDay,
+            completions: completionMap,
+            version: "2.0"
+        };
+        localStorage.setItem("careless_premium_timetable_v2", JSON.stringify(storageData));
+    }
+
+    function loadFromLocal() {
+        const stored = localStorage.getItem("careless_premium_timetable_v2");
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            if (parsed.tasksByDay) {
+                tasksByDay = parsed.tasksByDay;
+                completionMap = parsed.completions || {};
+                // ensure all days exist
+                const allDays = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+                allDays.forEach(day => { if (!tasksByDay[day]) tasksByDay[day] = []; sortTasks(tasksByDay[day]); });
+            } else {
+                // fallback to old format
+                const oldStored = localStorage.getItem("careless_premium_timetable");
+                if (oldStored) {
+                    const oldParsed = JSON.parse(oldStored);
+                    baseTasks = oldParsed.tasks || [];
+                    completionMap = oldParsed.completions || {};
+                    migrateOldData();
+                }
+            }
+        } else {
+            // try old storage
+            const oldStored = localStorage.getItem("careless_premium_timetable");
+            if (oldStored) {
+                const oldParsed = JSON.parse(oldStored);
+                baseTasks = oldParsed.tasks || [];
+                completionMap = oldParsed.completions || {};
+                migrateOldData();
+            } else {
+                // default demo tasks for Monday
+                tasksByDay.Monday = [
+                    { id: "demo1", subject: "Morning Meeting", time: "9:00 AM" },
+                    { id: "demo2", subject: "Project Review", time: "2:30 PM" }
+                ];
+                sortTasks(tasksByDay.Monday);
+                saveToLocal();
+            }
+        }
+        sortAllDays();
     }
 
     function playTinSound() {
@@ -330,25 +652,15 @@
         } catch(e) {}
     }
 
-    function saveToLocal() {
-        localStorage.setItem("careless_premium_timetable", JSON.stringify({tasks: baseTasks, completions: completionMap}));
-    }
-
-    function loadFromLocal() {
-        const stored = localStorage.getItem("careless_premium_timetable");
-        if (stored) {
-            const parsed = JSON.parse(stored);
-            baseTasks = parsed.tasks || [];
-            completionMap = parsed.completions || {};
-            sortTasks();
-        }
-    }
-
     function renderSwipeList() {
         const container = document.getElementById('swipeList');
-        if (!baseTasks.length) { container.innerHTML = '<div style="padding:2rem; text-align:center; color:#666;">No tasks</div>'; return; }
+        const currentTasks = tasksByDay[currentWeekday] || [];
+        if (!currentTasks.length) { 
+            container.innerHTML = '<div style="padding:2rem; text-align:center; color:#666;">No tasks</div>'; 
+            return; 
+        }
         
-        container.innerHTML = baseTasks.map(task => {
+        container.innerHTML = currentTasks.map(task => {
             const isDone = completionMap[`${currentDate}_${task.id}`];
             return `
                 <div class="swipe-item" data-id="${task.id}">
@@ -383,38 +695,176 @@
         });
     }
 
-    function toggleStatus(id) {
+    window.toggleStatus = function(id) {
         const key = `${currentDate}_${id}`;
         completionMap[key] = !completionMap[key];
         saveToLocal(); playTinSound(); renderSwipeList();
-    }
+        if (document.getElementById('settingsPanelOverlay').classList.contains('active')) {
+            renderPanelTasks();
+        }
+    };
 
     function updateDay(dateStr) {
-        const d = new Date(dateStr + "T12:00:00");
-        document.getElementById("dayPill").innerText = d.toLocaleDateString('en-US', {weekday:'long'});
-        currentDate = dateStr; renderSwipeList();
+        const weekday = getWeekdayFromDate(dateStr);
+        currentWeekday = weekday;
+        document.getElementById("dayPill").innerHTML = weekday;
+        currentDate = dateStr;
+        renderSwipeList();
     }
 
+    // ADD TASK TO CURRENT DAY
+    function addTaskToCurrentDay(subject, time) {
+        const newTask = { id: Date.now().toString() + Math.random(), subject: subject, time: time };
+        tasksByDay[currentWeekday].push(newTask);
+        sortTasks(tasksByDay[currentWeekday]);
+        saveToLocal();
+        renderSwipeList();
+        if (document.getElementById('settingsPanelOverlay').classList.contains('active')) {
+            renderPanelTasks();
+        }
+    }
+
+    // DELETE TASK FROM SPECIFIC DAY
+    function deleteTaskFromDay(dayName, taskId) {
+        tasksByDay[dayName] = tasksByDay[dayName].filter(t => t.id !== taskId);
+        // remove completions
+        Object.keys(completionMap).forEach(key => {
+            if (key.endsWith(`_${taskId}`)) delete completionMap[key];
+        });
+        saveToLocal();
+        if (currentWeekday === dayName) renderSwipeList();
+        if (document.getElementById('settingsPanelOverlay').classList.contains('active')) {
+            renderPanelTasks();
+        }
+    }
+
+    // RESET A SPECIFIC DAY
+    function resetSpecificDay(dayName) {
+        tasksByDay[dayName] = [];
+        saveToLocal();
+        if (currentWeekday === dayName) renderSwipeList();
+        if (document.getElementById('settingsPanelOverlay').classList.contains('active')) {
+            renderPanelTasks();
+        }
+        playTinSound();
+    }
+
+    // COPY MONDAY TO ALL DAYS
+    function copyMondayToAll() {
+        const mondayTasks = JSON.parse(JSON.stringify(tasksByDay.Monday));
+        const days = ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+        days.forEach(day => {
+            tasksByDay[day] = JSON.parse(JSON.stringify(mondayTasks));
+            sortTasks(tasksByDay[day]);
+        });
+        saveToLocal();
+        if (currentWeekday !== "Monday") renderSwipeList();
+        if (document.getElementById('settingsPanelOverlay').classList.contains('active')) {
+            renderPanelTasks();
+        }
+        playTinSound();
+    }
+
+    // ========== GEAR PANEL UI ==========
+    let activePanelDay = "Monday";
+    
+    function renderDayTabs() {
+        const container = document.getElementById('dayTabsContainer');
+        const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+        container.innerHTML = days.map(day => `
+            <div class="day-tab ${activePanelDay === day ? 'active-tab' : ''}" data-day="${day}">${day.slice(0,3)}</div>
+        `).join('');
+        document.querySelectorAll('.day-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                activePanelDay = tab.dataset.day;
+                renderDayTabs();
+                renderPanelTasks();
+                document.getElementById('selectedDayLabel').innerText = activePanelDay;
+            });
+        });
+    }
+
+    function renderPanelTasks() {
+        const listDiv = document.getElementById('panelTaskList');
+        const tasks = tasksByDay[activePanelDay] || [];
+        if (!tasks.length) {
+            listDiv.innerHTML = '<div style="padding:1rem; text-align:center; color:#8aaec0;">✨ No tasks for this day</div>';
+            return;
+        }
+        listDiv.innerHTML = tasks.map(task => `
+            <div class="panel-task-item">
+                <div>
+                    <span class="panel-task-info">${task.subject}</span>
+                    <span class="panel-task-time">${task.time}</span>
+                </div>
+                <div class="panel-actions">
+                    <button class="mini-btn danger" onclick="window.panelDeleteTask('${task.id}')">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    window.panelDeleteTask = function(taskId) {
+        deleteTaskFromDay(activePanelDay, taskId);
+        renderPanelTasks();
+    };
+
+    function openPanelAddTask() {
+        const subject = prompt("Subject name:", "New Task");
+        if (!subject) return;
+        let time = prompt("Time (e.g., 10:30 AM):", "12:00 PM");
+        if (!time) time = "12:00 PM";
+        const newTask = { id: Date.now().toString() + Math.random(), subject: subject, time: time };
+        tasksByDay[activePanelDay].push(newTask);
+        sortTasks(tasksByDay[activePanelDay]);
+        saveToLocal();
+        renderPanelTasks();
+        if (currentWeekday === activePanelDay) renderSwipeList();
+        playTinSound();
+    }
+
+    // EVENT LISTENERS
     document.getElementById("saveModalBtn").onclick = () => {
         const sub = document.getElementById("subjectInput").value;
         if (!sub) return;
         const time = `${document.getElementById("hourSelect").value}:${document.getElementById("minuteSelect").value} ${document.getElementById("ampmSelect").value}`;
-        baseTasks.push({id: Date.now().toString(), subject: sub, time: time});
-        sortTasks(); saveToLocal(); renderSwipeList();
+        addTaskToCurrentDay(sub, time);
         document.getElementById("modalOverlay").classList.remove('active');
+        document.getElementById("subjectInput").value = "";
     };
 
     document.getElementById("confirmDeleteYes").onclick = () => {
-        baseTasks = baseTasks.filter(t => t.id !== pendingDeleteTaskId);
-        saveToLocal(); renderSwipeList();
+        if (pendingDeleteTaskId) {
+            deleteTaskFromDay(currentWeekday, pendingDeleteTaskId);
+        }
         document.getElementById('confirmToast').classList.remove('active');
+        pendingDeleteTaskId = null;
     };
 
     document.getElementById("confirmDeleteNo").onclick = () => document.getElementById('confirmToast').classList.remove('active');
     document.getElementById("addBtn").onclick = () => document.getElementById("modalOverlay").classList.add('active');
     document.getElementById("cancelModalBtn").onclick = () => document.getElementById("modalOverlay").classList.remove('active');
     document.getElementById("calendarSelect").onchange = e => updateDay(e.target.value);
-    document.getElementById("clearAllBtn").onclick = () => { if(confirm("Clear everything?")){ baseTasks=[]; completionMap={}; saveToLocal(); renderSwipeList(); } };
+    document.getElementById("clearAllBtn").onclick = () => { if(confirm("Clear all tasks for today?")){ resetSpecificDay(currentWeekday); } };
+    
+    // Gear panel controls
+    document.getElementById("openGearBtn").onclick = () => {
+        document.getElementById("settingsPanelOverlay").classList.add('active');
+        activePanelDay = currentWeekday;
+        renderDayTabs();
+        renderPanelTasks();
+        document.getElementById('selectedDayLabel').innerText = activePanelDay;
+    };
+    document.getElementById("closeGearPanelBtn").onclick = () => document.getElementById("settingsPanelOverlay").classList.remove('active');
+    document.getElementById("panelAddTaskBtn").onclick = () => openPanelAddTask();
+    document.getElementById("copyMondayBtn").onclick = () => { if(confirm("Copy Monday's tasks to all other days?")) copyMondayToAll(); };
+    document.getElementById("resetSelectedDayBtn").onclick = () => { if(confirm(`Reset all tasks for ${activePanelDay}?`)) resetSpecificDay(activePanelDay); };
+    
+    document.getElementById("settingsPanelOverlay").addEventListener('click', (e) => {
+        if (e.target === document.getElementById("settingsPanelOverlay")) {
+            document.getElementById("settingsPanelOverlay").classList.remove('active');
+        }
+    });
 
     setInterval(() => {
         const now = new Date();
